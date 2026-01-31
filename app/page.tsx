@@ -1,157 +1,196 @@
-import Link from 'next/link';
-import { auth, signOut } from "@/auth"; // Import auth lấy thông tin, signOut để đăng xuất
-import { FaFacebook, FaInstagram, FaSignInAlt, FaRobot, FaArrowRight, FaCheckCircle, FaSignOutAlt, FaUserCircle } from 'react-icons/fa';
+import Image from "next/image";
+import Link from "next/link";
+import { auth, signOut } from "@/auth"; 
+import { 
+  FaArrowRight, FaCheckCircle, FaStar, FaUsers, FaBriefcase, FaSignOutAlt, 
+  FaFacebookMessenger, FaInstagram, FaLinkedinIn, FaYoutube 
+} from "react-icons/fa";
+import * as motion from "framer-motion/client";
+import Roadmap from "@/components/Roadmap";
+import BrandLogos from "@/components/BrandLogos";
+import IndustryTracks from "@/components/IndustryTracks";
+import ChatWidget from "@/components/ChatWidget"; // <--- 1. IMPORT Ở ĐÂY
 
 export default async function Home() {
-  // Lấy thông tin người dùng đang đăng nhập
   const session = await auth();
 
   return (
-    <div className="min-h-screen flex flex-col font-sans text-gray-800 bg-gray-50">
+    <div className="min-h-screen bg-white font-sans text-slate-800">
       
-      {/* --- THANH MENU (NAVIGATION) --- */}
-      <nav className="flex items-center justify-between px-6 md:px-12 py-4 bg-white shadow-md sticky top-0 z-50">
-        <div className="text-2xl font-extrabold text-blue-900 tracking-tighter">
-          NEXTGEN<span className="text-yellow-500">.</span>
-        </div>
-        
-        <div className="flex items-center gap-6">
-          <Link href="/blog" className="hidden md:block hover:text-blue-600 font-medium transition">
-            Blog Chia Sẻ
+      {/* 1. NAVBAR */}
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-sm">
+        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+          <Link href="/" className="flex items-center gap-2 group">
+             <div className="relative w-10 h-10 overflow-hidden rounded-full border border-slate-200">
+                <Image src="/logo.jpg" alt="NextGen Logo" fill className="object-cover" />
+             </div>
+             <span className="text-xl font-bold text-slate-900 tracking-tight group-hover:text-blue-600 transition">
+                NextGen <span className="text-blue-600">Mentorship</span>
+             </span>
           </Link>
-          
-          {/* Social Icons */}
-          <div className="flex items-center gap-4 border-l pl-6 border-gray-200">
-            <a href="https://www.facebook.com/profile.php?id=61585871531164" target="_blank" rel="noopener noreferrer" className="text-blue-600 text-2xl hover:scale-110 transition"><FaFacebook /></a>
-            <a href="https://www.instagram.com/nextgen.mentorship_jobapp/" target="_blank" rel="noopener noreferrer" className="text-pink-600 text-2xl hover:scale-110 transition"><FaInstagram /></a>
-          </div>
 
-          {/* --- KHU VỰC ĐĂNG NHẬP / ĐĂNG XUẤT --- */}
-          {session ? (
-            // Nếu ĐÃ ĐĂNG NHẬP thì hiện tên + nút Logout
-            <div className="flex items-center gap-4 ml-4">
-              <div className="flex items-center gap-2 text-blue-900 font-bold bg-blue-50 px-4 py-2 rounded-full">
-                <FaUserCircle size={20}/>
-                <span>Hi, {session.user?.name || "Mentor"}</span>
-              </div>
-              
-              <form action={async () => {
-                "use server"
-                await signOut()
-              }}>
-                <button type="submit" className="text-gray-500 hover:text-red-600 font-medium transition text-sm flex items-center gap-1">
-                  <FaSignOutAlt /> Logout
-                </button>
-              </form>
-            </div>
-          ) : (
-            // Nếu CHƯA ĐĂNG NHẬP thì hiện nút Login
-            <Link href="/api/auth/signin" className="flex items-center gap-2 px-5 py-2 bg-blue-900 text-white rounded-full font-bold hover:bg-blue-800 transition shadow-lg">
-              <FaSignInAlt /> <span>Login</span>
-            </Link>
-          )}
-        </div>
-      </nav>
+          <nav className="hidden md:flex items-center gap-8 font-medium text-slate-600">
+             <Link href="/" className="hover:text-blue-600 transition">Home</Link>
+             <Link href="/blog" className="hover:text-blue-600 transition">Blog & News</Link>
+             <Link href="#roadmap" className="hover:text-blue-600 transition">Roadmap</Link>
+          </nav>
 
-      {/* --- HERO SECTION --- */}
-      <header className="relative bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 text-white py-24 px-6 text-center overflow-hidden">
-        <div className="absolute top-0 left-0 w-64 h-64 bg-white opacity-5 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
-        
-        <div className="relative z-10 max-w-4xl mx-auto">
-          <div className="inline-block px-4 py-1 mb-6 border border-blue-400 rounded-full bg-blue-900/50 text-blue-200 text-sm font-semibold tracking-wide uppercase">
-             Mentorship Program 2026
-          </div>
-          <h1 className="text-5xl md:text-7xl font-extrabold mb-6 leading-tight">
-            Compete Smarter. <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400">
-              Outperform the Job Market.
-            </span>
-          </h1>
-          <p className="text-xl md:text-2xl text-blue-100 mb-10 max-w-2xl mx-auto font-light">
-            Được dẫn dắt trực tiếp bởi các Mentor đến từ <span className="font-bold text-white">Fortune 500</span> (Tech, Finance, Business).
-          </p>
-          <div className="flex flex-col md:flex-row gap-4 justify-center">
-            <button className="px-8 py-4 bg-yellow-500 text-blue-900 font-bold rounded-full text-lg hover:bg-yellow-400 transition shadow-xl flex items-center justify-center gap-2">
-              Đăng ký Mentee <FaArrowRight />
-            </button>
-            <button className="px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded-full text-lg hover:bg-white hover:text-blue-900 transition">
-              Tìm hiểu thêm
-            </button>
+          <div className="flex items-center gap-4">
+             {session ? (
+                 <div className="flex items-center gap-3">
+                    <span className="hidden md:block text-sm font-semibold text-slate-700">
+                        Hi, {session.user?.name}
+                    </span>
+                    <form action={async () => {
+                        'use server';
+                        await signOut();
+                    }}>
+                        <button className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-red-500 border border-red-100 bg-red-50 rounded-full hover:bg-red-100 transition">
+                            <FaSignOutAlt /> Logout
+                        </button>
+                    </form>
+                 </div>
+             ) : (
+                 <Link href="/api/auth/signin" className="px-5 py-2 text-sm font-bold text-white bg-slate-900 rounded-full hover:bg-slate-800 transition shadow-lg hover:shadow-xl">
+                    Sign In
+                 </Link>
+             )}
           </div>
         </div>
       </header>
 
-      {/* --- STATS SECTION --- */}
-      <section className="py-12 bg-white border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 divide-y md:divide-y-0 md:divide-x divide-gray-100">
-          <div className="text-center p-4">
-            <h3 className="text-5xl font-extrabold text-blue-900 mb-2">150+</h3>
-            <p className="text-gray-500 font-medium uppercase tracking-wide text-sm">Mentee đã được dẫn dắt</p>
-          </div>
-          <div className="text-center p-4">
-            <h3 className="text-5xl font-extrabold text-green-500 mb-2">75%</h3>
-            <p className="text-gray-500 font-medium uppercase tracking-wide text-sm">Success Rate (Tổng quan)</p>
-          </div>
-          <div className="text-center p-4">
-            <h3 className="text-5xl font-extrabold text-purple-600 mb-2">85%+</h3>
-            <p className="text-gray-500 font-medium uppercase tracking-wide text-sm">Success Rate (Internship)</p>
-          </div>
+      {/* 2. HERO SECTION */}
+      <section className="relative bg-white text-slate-900 py-24 px-6 overflow-hidden border-b border-slate-100">
+        <div className="max-w-5xl mx-auto text-center relative z-10 pt-10">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+              <div className="inline-block mb-6 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-xs font-bold tracking-widest uppercase">
+                 🚀 Over 3 Years of Excellence
+              </div>
+              
+              <h1 className="text-4xl md:text-7xl font-extrabold mb-8 leading-tight tracking-tight text-slate-900">
+                Dominate the U.S. Job Market <br/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 animate-gradient-x">
+                   with Fortune 500 Mentors
+                </span>
+              </h1>
+              
+              <p className="text-lg md:text-xl text-slate-600 mb-10 max-w-3xl mx-auto leading-relaxed">
+                Led by <strong className="text-blue-600">Top-Tier Mentors</strong> and experts from industry-leading firms. 
+                We have guided <strong className="text-blue-600"> 150+ Mentees</strong> across Tech, Finance & Business 
+                to secure their dream offers in the United States.
+              </p>
+
+              <div className="flex flex-col md:flex-row gap-5 justify-center">
+                <Link href="#roadmap" className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition-all shadow-lg hover:shadow-blue-500/30 flex items-center justify-center gap-2 transform hover:-translate-y-1">
+                  View 10-Step Roadmap <FaArrowRight />
+                </Link>
+                <button className="px-8 py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-full transition border border-slate-200">
+                  Success Stories
+                </button>
+              </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* --- CÁC NGÀNH ĐÀO TẠO --- */}
-      <section className="py-24 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Lĩnh Vực Chuyên Môn</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">Chương trình tập trung vào 3 trụ cột chính với lộ trình được cá nhân hóa.</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-1 border-t-4 border-green-500">
-              <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-2xl mb-6">$</div>
-              <h3 className="text-2xl font-bold mb-3 text-gray-900">Finance</h3>
-              <ul className="space-y-2 text-gray-600">
-                <li className="flex items-center gap-2"><FaCheckCircle className="text-green-500 size-4"/> Investment Banking</li>
-                <li className="flex items-center gap-2"><FaCheckCircle className="text-green-500 size-4"/> Corporate Finance</li>
-              </ul>
-            </div>
+      {/* 3. BRAND LOGOS */}
+      <BrandLogos />
 
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-1 border-t-4 border-blue-500">
-              <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl mb-6">&lt;/&gt;</div>
-              <h3 className="text-2xl font-bold mb-3 text-gray-900">Tech</h3>
-              <ul className="space-y-2 text-gray-600">
-                <li className="flex items-center gap-2"><FaCheckCircle className="text-blue-500 size-4"/> Software Engineering</li>
-                <li className="flex items-center gap-2"><FaCheckCircle className="text-blue-500 size-4"/> Data Science & AI</li>
-              </ul>
-            </div>
+      {/* 4. INDUSTRY TRACKS */}
+      <IndustryTracks />
 
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-1 border-t-4 border-purple-500">
-              <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-2xl mb-6">B</div>
-              <h3 className="text-2xl font-bold mb-3 text-gray-900">Business</h3>
-              <ul className="space-y-2 text-gray-600">
-                <li className="flex items-center gap-2"><FaCheckCircle className="text-purple-500 size-4"/> Management Consulting</li>
-                <li className="flex items-center gap-2"><FaCheckCircle className="text-purple-500 size-4"/> Business Analyst</li>
-              </ul>
+      {/* 5. STATS SECTION */}
+      <section className="py-20 bg-slate-50 border-b border-slate-200">
+        <div className="container mx-auto px-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-slate-200">
+                {[
+                    { number: "150+", label: "Mentees Mentored", icon: FaUsers, color: "text-blue-600" },
+                    { number: "95%", label: "Success Rate", icon: FaCheckCircle, color: "text-green-600" },
+                    { number: "$120k", label: "Avg. Starting Salary", icon: FaBriefcase, color: "text-purple-600" },
+                    { number: "50+", label: "Fortune 500 Partners", icon: FaStar, color: "text-yellow-500" },
+                ].map((stat, idx) => (
+                    <div key={idx} className="p-4">
+                        <stat.icon className={`text-4xl mx-auto mb-4 ${stat.color}`} />
+                        <h3 className="text-4xl font-extrabold text-slate-900">{stat.number}</h3>
+                        <p className="text-xs text-slate-500 font-bold mt-2 uppercase tracking-wide">{stat.label}</p>
+                    </div>
+                ))}
             </div>
-          </div>
         </div>
       </section>
 
-      {/* --- FOOTER & CHATBOT --- */}
-      <footer className="bg-gray-900 text-gray-400 py-12 text-center">
-        <p>&copy; 2026 NextGen Mentorship. All rights reserved.</p>
+      {/* 6. ROADMAP */}
+      <div id="roadmap">
+        <Roadmap />
+      </div>
+
+      {/* 7. FOOTER */}
+      <footer className="bg-slate-900 text-slate-400 py-16 border-t border-slate-800">
+        <div className="container mx-auto px-6 text-center">
+            
+            <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="max-w-2xl mx-auto mb-12"
+            >
+                <h2 className="text-3xl font-bold text-white mb-4">Ready to launch your career?</h2>
+                <p className="mb-8">Join the community of high-achievers today.</p>
+                <Link href="/blog" className="px-8 py-3 bg-white text-slate-900 font-bold rounded-full hover:bg-slate-200 transition">
+                    Get Started Now
+                </Link>
+            </motion.div>
+            
+            {/* SOCIAL ICONS */}
+            <div className="flex justify-center gap-6 mb-8">
+                <a 
+                    href="https://m.me/61585871531164" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all transform hover:-translate-y-1 shadow-lg shadow-blue-500/30"
+                >
+                    <FaFacebookMessenger size={22} />
+                </a>
+                <a 
+                    href="https://www.instagram.com/nextgen.mentorship_jobapp/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="p-3 bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 text-white rounded-full hover:brightness-110 transition-all transform hover:-translate-y-1 shadow-lg shadow-pink-500/30"
+                >
+                    <FaInstagram size={22} />
+                </a>
+                <a 
+                    href="https://linkedin.com/company/nextgen-mentorship" 
+                    target="_blank" 
+                    className="p-3 bg-[#0077b5] text-white rounded-full hover:brightness-110 transition-all transform hover:-translate-y-1 shadow-lg shadow-blue-600/30"
+                >
+                    <FaLinkedinIn size={22} />
+                </a>
+                <a 
+                    href="https://youtube.com/@nextgenmentorship" 
+                    target="_blank" 
+                    className="p-3 bg-red-600 text-white rounded-full hover:bg-red-700 transition-all transform hover:-translate-y-1 shadow-lg shadow-red-600/30"
+                >
+                    <FaYoutube size={22} />
+                </a>
+            </div>
+
+            <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+                <p>&copy; 2026 NextGen Mentorship. All rights reserved.</p>
+                <div className="flex gap-6">
+                    <a href="#" className="hover:text-white transition">Privacy Policy</a>
+                    <a href="#" className="hover:text-white transition">Terms of Service</a>
+                    <a href="#" className="hover:text-white transition">Contact</a>
+                </div>
+            </div>
+        </div>
       </footer>
 
-      <div className="fixed bottom-6 right-6 z-50 animate-bounce">
-        <button className="flex items-center gap-3 bg-blue-600 text-white px-6 py-4 rounded-full shadow-2xl hover:bg-blue-700 transition transform hover:scale-105">
-          <FaRobot className="text-2xl" />
-          <div className="text-left">
-            <p className="text-xs font-light text-blue-200">Bạn cần hỗ trợ?</p>
-            <p className="font-bold text-sm">Chat với Mentor</p>
-          </div>
-        </button>
-      </div>
+      {/* 8. CHAT WIDGET (Thêm vào cuối trang) */}
+      <ChatWidget />  
     </div>
   );
 }

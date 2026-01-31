@@ -1,26 +1,90 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+/* ================================================= */
+/* GOOGLE TRANSLATE CUSTOM STYLES           */
+/* ================================================= */
+
+/* 1. Ẩn thanh Banner/Taskbar trên cùng của Google */
+/* Lưu ý: Dùng visibility để Google vẫn load được script nhưng không nhìn thấy */
+.goog-te-banner-frame.skiptranslate {
+    visibility: hidden !important;
+    height: 0 !important;
+    display: none !important; 
+}
+
+/* 2. Ép trang web dính lên trên cùng (Xóa khoảng trắng do banner để lại) */
+body {
+    top: 0px !important; 
+    position: static !important;
+}
+
+/* 3. Làm widget gốc "Tàng hình" */
+/* Chúng ta không xóa nó (display:none) vì Google sẽ báo lỗi.
+   Thay vào đó, ta thu nhỏ nó lại còn 0px và làm trong suốt. */
+#google_translate_element {
+    width: 0px;
+    height: 0px;
+    overflow: hidden;
+    position: absolute;
+    opacity: 0;
+    z-index: -1;
+    top: 0;
+    left: 0;
+}
+
+/* 4. Ẩn Logo Google và các Text rác trong widget */
+.goog-te-gadget {
+    color: transparent !important;
+    font-size: 0 !important;
+}
+.goog-te-gadget span {
+    display: none !important;
+}
+
+/* 5. Ẩn Tooltip (Bong bóng hiện ra khi rê chuột vào chữ đã dịch) */
+.goog-tooltip, 
+.goog-tooltip:hover,
+#goog-gt-tt,
+.goog-te-balloon-frame {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* 6. Ẩn màu nền Highlight (Xanh/Đỏ) khi rê chuột */
+.goog-text-highlight {
+    background-color: transparent !important;
+    border: none !important; 
+    box-shadow: none !important;
+}
+
+/* 7. Ẩn icon G/N trên thanh công cụ trình duyệt (nếu có) */
+.VIpgJd-ZVi9od-ORHb-OEVmcd {
+  display: none !important;
 }
