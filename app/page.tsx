@@ -6,10 +6,14 @@ import {
   FaFacebookMessenger, FaInstagram, FaLinkedinIn, FaYoutube 
 } from "react-icons/fa";
 import * as motion from "framer-motion/client";
+
+// IMPORT CÁC COMPONENT ĐÃ TẠO
 import Roadmap from "@/components/Roadmap";
 import BrandLogos from "@/components/BrandLogos";
 import IndustryTracks from "@/components/IndustryTracks";
-import ChatWidget from "@/components/ChatWidget"; // <--- 1. IMPORT Ở ĐÂY
+import ChatWidget from "@/components/ChatWidget";
+import GoogleTranslate from "@/components/GoogleTranslate";
+import RegistrationForm from "@/components/RegistrationForm"; // <--- FORM ĐĂNG KÝ MỚI
 
 export default async function Home() {
   const session = await auth();
@@ -33,6 +37,7 @@ export default async function Home() {
              <Link href="/" className="hover:text-blue-600 transition">Home</Link>
              <Link href="/blog" className="hover:text-blue-600 transition">Blog & News</Link>
              <Link href="#roadmap" className="hover:text-blue-600 transition">Roadmap</Link>
+             <Link href="#register" className="hover:text-blue-600 transition">Apply Now</Link>
           </nav>
 
           <div className="flex items-center gap-4">
@@ -59,7 +64,7 @@ export default async function Home() {
         </div>
       </header>
 
-      {/* 2. HERO SECTION */}
+      {/* 2. HERO SECTION (NỀN TRẮNG) */}
       <section className="relative bg-white text-slate-900 py-24 px-6 overflow-hidden border-b border-slate-100">
         <div className="max-w-5xl mx-auto text-center relative z-10 pt-10">
           <motion.div
@@ -88,15 +93,15 @@ export default async function Home() {
                 <Link href="#roadmap" className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition-all shadow-lg hover:shadow-blue-500/30 flex items-center justify-center gap-2 transform hover:-translate-y-1">
                   View 10-Step Roadmap <FaArrowRight />
                 </Link>
-                <button className="px-8 py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-full transition border border-slate-200">
-                  Success Stories
-                </button>
+                <Link href="#register" className="px-8 py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-full transition border border-slate-200">
+                  Join Mentorship
+                </Link>
               </div>
           </motion.div>
         </div>
       </section>
 
-      {/* 3. BRAND LOGOS */}
+      {/* 3. BRAND LOGOS (ĐÃ CHỈNH NỀN TRẮNG) */}
       <BrandLogos />
 
       {/* 4. INDUSTRY TRACKS */}
@@ -127,7 +132,11 @@ export default async function Home() {
         <Roadmap />
       </div>
 
-      {/* 7. FOOTER */}
+      {/* 7. FORM ĐĂNG KÝ (MỚI THÊM) */}
+      {/* Nằm ngay trên Footer để thuận tiện cho việc kêu gọi hành động (CTA) */}
+      <RegistrationForm />
+
+      {/* 8. FOOTER */}
       <footer className="bg-slate-900 text-slate-400 py-16 border-t border-slate-800">
         <div className="container mx-auto px-6 text-center">
             
@@ -139,7 +148,7 @@ export default async function Home() {
             >
                 <h2 className="text-3xl font-bold text-white mb-4">Ready to launch your career?</h2>
                 <p className="mb-8">Join the community of high-achievers today.</p>
-                <Link href="/blog" className="px-8 py-3 bg-white text-slate-900 font-bold rounded-full hover:bg-slate-200 transition">
+                <Link href="#register" className="px-8 py-3 bg-white text-slate-900 font-bold rounded-full hover:bg-slate-200 transition">
                     Get Started Now
                 </Link>
             </motion.div>
@@ -189,8 +198,9 @@ export default async function Home() {
         </div>
       </footer>
 
-      {/* 8. CHAT WIDGET (Thêm vào cuối trang) */}
-      <ChatWidget />  
+      {/* 9. WIDGETS TIỆN ÍCH */}
+      <ChatWidget />      {/* Chatbot Robot ở góc phải */}
+      <GoogleTranslate /> {/* Nút Dịch ở góc trái */}
     </div>
   );
 }
