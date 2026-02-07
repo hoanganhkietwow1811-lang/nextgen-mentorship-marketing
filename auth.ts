@@ -27,7 +27,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         // 2. Logic cho USER THƯỜNG (Các email còn lại)
-        // Cho phép đăng nhập nhưng role chỉ là 'user'
         return {
           id: "user-id",
           name: "Regular User",
@@ -38,18 +37,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    // Lưu role vào session để dùng ở giao diện
-    async session({ session, token }) {
-      if (session.user && token.role) {
-        session.user.role = token.role as string;
-      }
-      return session;
-    },
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role;
+        // 👇 FIX: Ép kiểu user thành 'any' để lấy role mà không lỗi đỏ
+        token.role = (user as any).role;
       }
       return token;
+    },
+    async session({ session, token }) {
+      // 👇 FIX QUAN TRỌNG: Kiểm tra và ép kiểu để gán role vào session
+      if (session.user && token.role) {
+        // Dùng (session.user as any) để TypeScript không chặn lỗi
+        (session.user as any).role = token.role; 
+      }
+      return session;
     }
   }
 });
