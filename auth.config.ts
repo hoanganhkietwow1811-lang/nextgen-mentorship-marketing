@@ -1,31 +1,30 @@
-import type { NextAuthConfig } from "next-auth"
-import Credentials from "next-auth/providers/credentials"
-
-// Chỉ chứa logic Credentials và các cấu hình nhẹ
+import type { NextAuthConfig } from 'next-auth';
+ 
 export const authConfig = {
-  providers: [
-    Credentials({
-      name: "Credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
-      },
-      authorize: async (credentials) => {
-        // Logic check user giả lập hoặc gọi API bên ngoài (không gọi trực tiếp Prisma ở đây nếu có thể)
-        const user = { id: "1", name: "Mentor Demo", email: "demo@example.com" }
-        return user
-      },
-    }),
-  ],
+  // 1. Dòng này giúp code nhận diện đúng giao thức https trên Vercel
+  trustHost: true,
+  
   pages: {
-    signIn: '/api/auth/signin', // Đường dẫn trang đăng nhập (tùy chọn)
+    signIn: '/api/auth/signin', // Trang đăng nhập mặc định
   },
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      // Ví dụ: Logic bảo vệ routes
-      // if (nextUrl.pathname.startsWith('/dashboard')) return isLoggedIn;
+      
+      // 2. CHỈ BẢO VỆ CÁC TRANG CẦN THIẾT
+      // Logic cũ có thể đang chặn cả trang chủ nên gây lỗi loop
+      // Ở đây mình chỉ chặn các trang bắt đầu bằng /admin hoặc /dashboard
+      const isProtectedRoute = nextUrl.pathname.startsWith('/admin') || nextUrl.pathname.startsWith('/dashboard');
+
+      if (isProtectedRoute) {
+        // Nếu vào trang mật mà chưa đăng nhập -> Chặn (False)
+        if (isLoggedIn) return true;
+        return false; 
+      }
+      
+      // 3. QUAN TRỌNG: Các trang còn lại (Home, Signin...) -> CHO PHÉP HẾT (True)
       return true;
     },
   },
-} satisfies NextAuthConfig
+  providers: [], 
+} satisfies NextAuthConfig;

@@ -1,13 +1,22 @@
 import NextAuth from "next-auth"
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import { PrismaClient } from "@prisma/client"
-import { authConfig } from "./auth.config" // <--- Import cấu hình nhẹ
+// ... các import khác
 
-const prisma = new PrismaClient()
-
-// Ghép Prisma Adapter vào cấu hình nhẹ
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
-  session: { strategy: "jwt" },
-  ...authConfig, // <--- Spread cấu hình từ file kia sang
+  trustHost: true,   // <--- THÊM DÒNG NÀY (Quan trọng nhất)
+  secret: process.env.AUTH_SECRET, // Đảm bảo có dòng này
+  providers: [
+    // ... các provider của bạn (Google, Credentials...)
+  ],
+  pages: {
+    signIn: '/api/auth/signin', // (Nếu bạn có custom page)
+  },
+  callbacks: {
+    async session({ session, token }) {
+      return session;
+    },
+    async redirect({ url, baseUrl }) {
+      // Cho phép redirect về trang chủ sau khi đăng nhập
+      return baseUrl;
+    }
+  }
 })
