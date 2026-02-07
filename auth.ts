@@ -1,22 +1,15 @@
 import NextAuth from "next-auth"
-// ... các import khác
+import Google from "next-auth/providers/google"
+import { authConfig } from "./auth.config" // Import cấu hình chuẩn bạn vừa sửa
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  trustHost: true,   // <--- THÊM DÒNG NÀY (Quan trọng nhất)
-  secret: process.env.AUTH_SECRET, // Đảm bảo có dòng này
+  ...authConfig, // Kế thừa toàn bộ cấu hình chuẩn (trustHost, callbacks...)
+  
+  // Khai báo Provider Google ở đây (thay vì để trống như bên config)
   providers: [
-    // ... các provider của bạn (Google, Credentials...)
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    }),
   ],
-  pages: {
-    signIn: '/api/auth/signin', // (Nếu bạn có custom page)
-  },
-  callbacks: {
-    async session({ session, token }) {
-      return session;
-    },
-    async redirect({ url, baseUrl }) {
-      // Cho phép redirect về trang chủ sau khi đăng nhập
-      return baseUrl;
-    }
-  }
 })
