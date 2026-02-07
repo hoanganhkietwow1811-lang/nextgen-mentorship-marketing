@@ -1,4 +1,4 @@
-// File: auth.ts
+// File: auth.ts (Copy đè lên toàn bộ code cũ)
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { authConfig } from "./auth.config";
@@ -14,24 +14,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       async authorize(credentials) {
         const email = credentials.email as string;
-        // Password check tạm bỏ qua để dễ test
-
-        // 1. Logic cho ADMIN (Có chữ admin trong email)
+        
+        // Cấp quyền Admin nếu email có chứa chữ "admin"
         if (email.toLowerCase().includes("admin")) {
           return {
             id: "admin-id",
             name: "Admin User",
             email: email,
-            role: "admin", // <--- Cấp quyền VIP
+            role: "admin",
           };
         }
 
-        // 2. Logic cho USER THƯỜNG (Các email còn lại)
+        // User thường
         return {
           id: "user-id",
-          name: "Regular User",
+          name: "User",
           email: email,
-          role: "user", // <--- Quyền thường
+          role: "user",
         };
       },
     }),
@@ -39,15 +38,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        // 👇 FIX: Ép kiểu user thành 'any' để lấy role mà không lỗi đỏ
+        // 👇 QUAN TRỌNG: Thêm 'as any' để sửa lỗi build đỏ lòm
         token.role = (user as any).role;
       }
       return token;
     },
     async session({ session, token }) {
-      // 👇 FIX QUAN TRỌNG: Kiểm tra và ép kiểu để gán role vào session
       if (session.user && token.role) {
-        // Dùng (session.user as any) để TypeScript không chặn lỗi
+        // 👇 QUAN TRỌNG: Thêm 'as any' ở đây nữa
         (session.user as any).role = token.role; 
       }
       return session;
