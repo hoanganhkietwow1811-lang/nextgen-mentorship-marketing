@@ -17,10 +17,13 @@ export default async function BlogPage() {
   const posts = await getPosts();
   const session = await auth();
 
+  // 👇 LOGIC MỚI: Kiểm tra chính xác quyền Admin
+  const isAdmin = (session?.user as any)?.role === 'admin';
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
       
-      {/* Header - English Version */}
+      {/* Header - Giữ nguyên thiết kế cũ của bạn */}
       <div className="bg-[#0f172a] text-white py-20 px-6 text-center shadow-lg relative overflow-hidden">
         <div className="relative z-10">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">NextGen Blog & News</h1>
@@ -33,7 +36,8 @@ export default async function BlogPage() {
                   <FaArrowLeft /> Home
                 </Link>
 
-                {session && (
+                {/* 👇 CHỈ ADMIN MỚI THẤY NÚT NEW POST */}
+                {isAdmin && (
                     <Link href="/blog/new" className="inline-flex items-center gap-2 px-6 py-2 bg-[#f59e0b] text-white font-bold rounded-full hover:bg-[#d97706] transition shadow-lg">
                       <FaPlus /> New Post
                     </Link>
@@ -47,15 +51,15 @@ export default async function BlogPage() {
         {posts.length === 0 ? (
            <div className="text-center py-20">
                <p className="text-slate-400 text-xl">No posts available yet.</p>
-               {session && <p className="text-slate-500 mt-2">Click "New Post" to start sharing!</p>}
+               {isAdmin && <p className="text-slate-500 mt-2">Click "New Post" to start sharing!</p>}
            </div>
         ) : (
             <div className="grid md:grid-cols-2 gap-8">
                 {posts.map((post) => (
                 <article key={post.id} className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 overflow-hidden group flex flex-col h-full relative">
                     
-                    {/* Delete Button (Admin) */}
-                    {session && (
+                    {/* 👇 CHỈ ADMIN MỚI THẤY NÚT XÓA */}
+                    {isAdmin && (
                       <div className="absolute top-4 right-4 z-20">
                         <form action={deletePost}>
                           <input type="hidden" name="postId" value={post.id} />
@@ -86,7 +90,6 @@ export default async function BlogPage() {
                     <div className="p-6 flex flex-col flex-grow">
                         <div className="flex items-center gap-2 text-xs text-slate-400 mb-3">
                             <FaCalendarAlt />
-                            {/* Format Date theo chuẩn US (Tiếng Anh) */}
                             {new Date(post.createdAt).toLocaleDateString('en-US', {
                               year: 'numeric', month: 'long', day: 'numeric'
                             })}

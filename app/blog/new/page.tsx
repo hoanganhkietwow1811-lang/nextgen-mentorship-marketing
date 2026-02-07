@@ -1,8 +1,20 @@
+// File: app/blog/new/page.tsx
 import { createPost } from "@/app/actions";
-import { FaPaperPlane, FaImage, FaArrowLeft, FaFileUpload, FaLink } from "react-icons/fa";
+import { auth } from "@/auth"; // <--- Import Auth
+import { redirect } from "next/navigation"; // <--- Import Redirect
+import { FaPaperPlane, FaImage, FaArrowLeft, FaLink } from "react-icons/fa";
 import Link from "next/link";
 
-export default function NewPostPage() {
+export default async function NewPostPage() {
+  // --- BẢO MẬT: KIỂM TRA QUYỀN ADMIN ---
+  const session = await auth();
+  
+  // Nếu chưa đăng nhập HOẶC không phải admin -> Đuổi về trang blog
+  if (!session || (session.user as any).role !== 'admin') {
+    redirect("/blog");
+  }
+  // --------------------------------------
+
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 font-sans">
       <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl p-8 border-t-4 border-[#0f172a]">
