@@ -4,5 +4,6 @@
 import { signIn } from "@/auth";
 
 export async function handleLogin(formData: FormData) {
-  await signIn("credentials", formData);
+  // Thêm dòng redirectTo: "/"
+  await signIn("credentials", formData, { redirectTo: "/" });
 }

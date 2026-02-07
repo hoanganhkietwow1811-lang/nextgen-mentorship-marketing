@@ -4,12 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { 
   FaArrowRight, FaCheckCircle, FaStar, FaUsers, FaBriefcase, FaSignOutAlt, 
-  FaFacebookMessenger, FaInstagram, FaLinkedinIn, FaYoutube 
+  FaFacebookMessenger, FaInstagram, FaLinkedinIn, FaYoutube, FaPenNib 
 } from "react-icons/fa";
-import { motion } from "framer-motion"; // Import chuẩn
-import { signOut } from "next-auth/react"; 
+import { motion } from "framer-motion"; 
 
-// IMPORT CÁC COMPONENT CON
+// 👇 THAY ĐỔI 1: Import hàm đăng xuất từ Server Action (file actions.ts chúng ta vừa gộp)
+import { handleSignOut } from "@/app/actions";
+
+// IMPORT CÁC COMPONENT CON (Giữ nguyên)
 import Roadmap from "@/components/Roadmap";
 import BrandLogos from "@/components/BrandLogos";
 import IndustryTracks from "@/components/IndustryTracks";
@@ -17,8 +19,10 @@ import ChatWidget from "@/components/ChatWidget";
 import GoogleTranslate from "@/components/GoogleTranslate";
 import RegistrationForm from "@/components/RegistrationForm"; 
 
-// Nhận session từ cha truyền xuống
 export default function HomeContent({ session }: { session: any }) {
+  
+  // 👇 THAY ĐỔI 2: Kiểm tra quyền Admin
+  const isAdmin = (session?.user as any)?.role === 'admin';
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-800">
@@ -50,22 +54,36 @@ export default function HomeContent({ session }: { session: any }) {
              <Link href="#roadmap" className="hover:text-blue-600 transition">Roadmap</Link>
           </nav>
 
-          {/* ĐĂNG NHẬP */}
+          {/* KHU VỰC TÀI KHOẢN (ĐÃ CẬP NHẬT LOGIC MỚI) */}
           <div className="flex items-center gap-4">
              {session ? (
                  <div className="flex items-center gap-3">
                     <span className="hidden md:block text-sm font-semibold text-slate-700">
-                        Hi, {session.user?.name}
+                        Hi, {session.user?.name || session.user?.email}
                     </span>
+
+                    {/* 👇 NẾU LÀ ADMIN: Hiện nút Viết Bài */}
+                    {isAdmin && (
+                        <Link 
+                            href="/blog/new"
+                            className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-indigo-600 rounded-full hover:bg-indigo-700 transition shadow-md"
+                        >
+                            <FaPenNib /> Write Blog
+                        </Link>
+                    )}
+
+                    {/* 👇 NÚT ĐĂNG XUẤT (Gọi Server Action handleSignOut) */}
                     <button 
-                        onClick={() => signOut()}
+                        onClick={() => handleSignOut()}
                         className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-red-500 border border-red-100 bg-red-50 rounded-full hover:bg-red-100 transition"
+                        title="Sign Out"
                     >
                         <FaSignOutAlt />
                     </button>
                  </div>
              ) : (
-                 <Link href="/api/auth/signin" className="text-sm font-bold text-slate-500 hover:text-slate-900 transition">
+                 // NẾU CHƯA ĐĂNG NHẬP: Link tới trang /login mới
+                 <Link href="/login" className="text-sm font-bold text-slate-500 hover:text-slate-900 transition">
                     Sign In
                  </Link>
              )}
@@ -73,7 +91,7 @@ export default function HomeContent({ session }: { session: any }) {
         </div>
       </header>
 
-      {/* 2. HERO SECTION */}
+      {/* 2. HERO SECTION (Giữ nguyên code cũ của bạn) */}
       <section className="relative bg-white text-slate-900 py-24 px-6 overflow-hidden border-b border-slate-100">
         <div className="max-w-5xl mx-auto text-center relative z-10 pt-10">
           <motion.div
