@@ -18,18 +18,14 @@ export async function verifyPassword(
 
 // Get user from database by email (including password)
 export async function getUserByEmail(email: string) {
-  return prisma.user.findUnique({
+  // Fetch user without select to get all fields including password
+  // Using type assertion since Prisma client may not have updated types yet
+  const user = await prisma.user.findUnique({
     where: { email: email.toLowerCase() },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      password: true,
-      emailVerified: true,
-      image: true,
-    },
   });
+  
+  // Return with password field included (type assertion for build compatibility)
+  return user as (typeof user & { password: string | null }) | null;
 }
 
 // Create user with hashed password
@@ -41,12 +37,13 @@ export async function createUser(
 ) {
   const hashedPassword = await hashPassword(password);
   
+  // Use type assertion to include password field during build
   return prisma.user.create({
     data: {
       email: email.toLowerCase(),
       name: name || email.split('@')[0],
       password: hashedPassword,
       role: role.toUpperCase(),
-    },
+    } as any, // Type assertion needed until Prisma client is regenerated
   });
 }
