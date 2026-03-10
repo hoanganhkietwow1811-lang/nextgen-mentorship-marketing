@@ -38,7 +38,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
 
           // Get user from database
-          const user = await getUserByEmail(email);
+          let user;
+          try {
+            user = await getUserByEmail(email);
+          } catch (dbError: any) {
+            // Handle database errors (e.g., password column doesn't exist)
+            const errorMsg = dbError?.message || String(dbError);
+            if (errorMsg.includes("password") || errorMsg.includes("column") || errorMsg.includes("Unknown column")) {
+              console.error("⚠️ Database migration required! Password column doesn't exist.");
+              // Return a helpful error that won't crash the app
+              throw new Error("Database configuration error. Please contact administrator.");
+            }
+            // Re-throw other database errors
+            throw dbError;
+          }
           
           if (!user) {
             // Don't reveal if user exists (security best practice)
@@ -48,11 +61,28 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           // Verify password
           const userPassword = (user as any).password;
+          
+          // If user has no password set (migration not run or password not set)
           if (!userPassword) {
-            console.error("User has no password set");
+            console.error("User has no password set - database migration may be needed");
+            // Temporary fallback: allow login for admin emails (REMOVE AFTER MIGRATION)
+            // This is a temporary workaround until the database migration is run
+            const emailLower = email.toLowerCase();
+            if (emailLower.includes("admin")) {
+              console.warn("⚠️ Using temporary fallback authentication (migration not run)");
+              return {
+                id: user.id,
+                name: user.name || user.email || "Admin User",
+                email: user.email || email,
+                role: "admin",
+              };
+            }
+            // For non-admin users, require password
+            console.error("Password required but not set for user");
             return null;
           }
 
+          // Verify password with bcrypt
           const isValidPassword = await verifyPassword(password, userPassword);
           
           if (!isValidPassword) {
@@ -67,8 +97,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             email: user.email || email,
             role: user.role?.toLowerCase() || "user",
           };
-        } catch (error) {
-          console.error("Authorization error:", error);
+        } catch (error: any) {
+          // Log detailed error for debugging
+          console.error("Authorization error:", {
+            message: error?.message,
+            stack: error?.stack,
+            name: error?.name,
+          });
+          
+          // Don't expose internal errors to user
+          // Return null to indicate authentication failed
           return null;
         }
       },

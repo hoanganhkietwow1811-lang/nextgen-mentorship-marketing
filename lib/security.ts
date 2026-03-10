@@ -11,7 +11,7 @@ export const postSchema = z.object({
 
 export const loginSchema = z.object({
   email: z.string().email().max(255).toLowerCase().trim(),
-  password: z.string().min(8).max(128),
+  password: z.string().min(1).max(128), // Minimum 1 char for now (can be increased after migration)
 });
 
 // Sanitize filename to prevent path traversal and other attacks

@@ -18,14 +18,38 @@ export async function verifyPassword(
 
 // Get user from database by email (including password)
 export async function getUserByEmail(email: string) {
-  // Fetch user without select to get all fields including password
-  // Using type assertion since Prisma client may not have updated types yet
-  const user = await prisma.user.findUnique({
-    where: { email: email.toLowerCase() },
-  });
-  
-  // Return with password field included (type assertion for build compatibility)
-  return user as (typeof user & { password: string | null }) | null;
+  try {
+    // Fetch user without select to get all fields including password
+    // Using type assertion since Prisma client may not have updated types yet
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+    });
+    
+    if (!user) {
+      return null;
+    }
+    
+    // Return with password field included (type assertion for build compatibility)
+    // Handle case where password column might not exist in database yet
+    const userWithPassword = user as any;
+    return {
+      ...user,
+      password: userWithPassword.password || null,
+    };
+  } catch (error: any) {
+    // Handle database errors gracefully (e.g., column doesn't exist)
+    const errorMessage = error?.message || String(error);
+    console.error("Error fetching user:", errorMessage);
+    
+    // If it's a column error, the migration hasn't been run
+    if (errorMessage.includes("password") || errorMessage.includes("column") || errorMessage.includes("Unknown column")) {
+      console.error("⚠️ Database migration may not have been run. Password column might not exist.");
+      console.error("Please run: npx prisma migrate deploy (for production) or npx prisma migrate dev (for development)");
+    }
+    
+    // Re-throw to be handled by caller
+    throw error;
+  }
 }
 
 // Create user with hashed password
