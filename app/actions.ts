@@ -43,7 +43,9 @@ export async function createPost(formData: FormData) {
   });
 
   if (!validationResult.success) {
-    throw new Error("Dữ liệu không hợp lệ: " + validationResult.error.errors.map(e => e.message).join(", "))
+    // Thêm 'as any' để TypeScript không soi mói lỗi này nữa
+    const validationError = validationResult.error as any;
+    throw new Error("Dữ liệu không hợp lệ: " + validationError.issues.map((e: any) => e.message).join(", "));
   }
 
   // Sanitize content to prevent XSS
