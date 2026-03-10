@@ -51,6 +51,7 @@ model User {
   emailVerified DateTime?
   image         String?
   role          String    @default("USER")
+  password      String?   // Hashed password for credentials provider
   accounts      Account[]
   sessions      Session[]
   posts         Post[]
